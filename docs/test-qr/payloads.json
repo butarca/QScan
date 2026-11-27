@@ -1,0 +1,7 @@
+{
+  "01-pregled.png": {"v":1,"id":"PKG-000121","date":"2026-11-24","task":"INSPECT","loc":"Prevzem B","note":"Preveri, ali je embalaža poškodovana."},
+  "02-premik.png": {"v":1,"id":"PKG-000123","date":"2026-11-26","task":"MOVE","loc":"A-03-2","note":"Krhko, ne zlagaj."},
+  "03-odprema.png": {"v":1,"id":"PKG-000130","date":"2026-11-27","task":"SHIP","loc":"Rampa 2"},
+  "04-napacna-verzija.png": {"v":2,"id":"PKG-000131","task":"MOVE"},
+  "05-ni-qscan.png": "https://example.com/to-ni-paket"
+}

@@ -5,22 +5,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.platform.LocalContext
+import com.emp.qscan.ui.PackageScreen
+import com.emp.qscan.ui.ScanScreen
 import com.emp.qscan.ui.theme.QScanTheme
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,64 +26,45 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             QScanTheme {
-                QScanApp()
+                Surface(Modifier.fillMaxSize()) { QScanApp() }
             }
         }
     }
 }
 
-@PreviewScreenSizes
 @Composable
 fun QScanApp() {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+    val context = LocalContext.current
+    // Raw payload survives rotation; parsing is cheap so it is redone on read.
+    var payload by rememberSaveable { mutableStateOf<String?>(null) }
+    var error by rememberSaveable { mutableStateOf<Int?>(null) }
+    val info = payload?.let(::parsePackage)
 
-    NavigationSuiteScaffold(
-        navigationSuiteItems = {
-            AppDestinations.entries.forEach {
-                item(
-                    icon = {
-                        Icon(
-                            painterResource(it.icon),
-                            contentDescription = it.label
-                        )
-                    },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
-                    onClick = { currentDestination = it }
-                )
+    fun scan() {
+        GmsBarcodeScanning.getClient(
+            context,
+            GmsBarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build(),
+        ).startScan()
+            .addOnSuccessListener { code ->
+                val raw = code.rawValue
+                if (raw != null && parsePackage(raw) != null) {
+                    payload = raw
+                    error = null
+                } else {
+                    error = R.string.error_invalid
+                }
             }
-        }
-    ) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Greeting(
-                name = "Android",
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
+            .addOnFailureListener { error = R.string.error_scanner }
+        // Cancel (back in scanner) keeps the current screen with no message.
     }
-}
 
-enum class AppDestinations(
-    val label: String,
-    val icon: Int,
-) {
-    HOME("Home", R.drawable.ic_home),
-    FAVORITES("Favorites", R.drawable.ic_favorite),
-    PROFILE("Profile", R.drawable.ic_account_box),
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    QScanTheme {
-        Greeting("Android")
+    if (info == null) {
+        ScanScreen(error, ::scan)
+    } else {
+        PackageScreen(
+            info,
+            onBack = { payload = null },
+            onDone = { payload = null; scan() },
+        )
     }
 }

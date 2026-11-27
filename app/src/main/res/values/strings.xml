@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">QScan</string>
+    <string name="scan_eyebrow">SKLADIŠČE</string>
+    <string name="scan_title">Skeniraj kodo na paketu</string>
+    <string name="scan_body">Usmeri kamero v QR-kodo na nalepki. Prikazali se bodo podatki o paketu in naslednji korak.</string>
+    <string name="scan_button">Skeniraj paket</string>
+    <string name="retry_button">Poskusi znova</string>
+    <string name="error_invalid">Koda ni prepoznana kot QScan paket. Preveri nalepko in poskusi znova.</string>
+    <string name="error_scanner">Skener ni na voljo. Naprava potrebuje Google Play storitve; ob prvem zagonu se modul lahko še prenaša.</string>
+    <string name="package_eyebrow">PAKET</string>
+    <string name="package_task">Naslednji korak</string>
+    <string name="package_date">Datum</string>
+    <string name="package_location">Lokacija</string>
+    <string name="package_note">Opomba</string>
+    <string name="package_done">Opravljeno, skeniraj naslednjega</string>
+    <string name="back">Nazaj</string>
+    <string name="task_inspect">Pregled</string>
+    <string name="task_inspect_hint">Preveri stanje paketa in nalepke.</string>
+    <string name="task_move">Premik</string>
+    <string name="task_move_hint">Premakni paket na navedeno lokacijo.</string>
+    <string name="task_ship">Odprema</string>
+    <string name="task_ship_hint">Pripravi paket za odpremo.</string>
 </resources>
